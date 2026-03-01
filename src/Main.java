@@ -1,6 +1,4 @@
-import com.mongodb.client.MongoDatabase;
 
-import java.sql.Connection;
 
 /**
  * Project: Retail Store Database Project
@@ -9,7 +7,7 @@ import java.sql.Connection;
  * Author: Alyssa Thompson
  * Date Developed: 02/28/2026
  * Last Date Changed: 03/01/2026
- * Rev: 1.0
+ * Rev: 3.0
  */
 
 public class Main {
@@ -23,19 +21,13 @@ public class Main {
         MongoCRUD mongo = new MongoCRUD();
 
         // MySQL CRUD
-        mysql.insertCustomer(
-                Connection connection,
-                customer1.getCustomerId(),
-                customer1.getFirstName(),
-                customer1.getLastName(),
-                customer1.getEmail(),
-                customer1.getPhone()
-        );
+        mysql.insertCustomer(customer1);
         mysql.insertCustomer(customer2);
         mysql.insertCustomer(customer3);
         mysql.readCustomers();
         mysql.updateCustomer(1, "updated@email.com");
         mysql.deleteCustomer(3);
+        mysql.close();
 
         // Mongo CRUD
         mongo.insertCustomer(customer1);
@@ -44,6 +36,6 @@ public class Main {
         mongo.readCustomers();
         mongo.updateCustomer(1, "updated@email.com");
         mongo.deleteCustomer(3);
-
+        mongo.close();
     }
 }

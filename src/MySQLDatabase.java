@@ -5,7 +5,7 @@
  * Author: Alyssa Thompson
  * Date Developed: 02/28/2026
  * Last Date Changed: 03/01/2026
- * Rev: 1.0
+ * Rev: 3.0
  */
 
 import java.sql.DriverManager;
@@ -22,100 +22,64 @@ public class MySQLDatabase {
     private static final String USERNAME = "root";
     private static final String PASSWORD = "IST888IST888";
 
-    public static void main(String[] args) {
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+    private Connection connection;
 
-            // Create
-            insertCustomer(connection, 1, "John", "Smith", "john@email.com", "1234567890");
-            insertCustomer(connection, 2, "Mary", "Brown", "mary@email.com", "2345678901");
-            insertCustomer(connection, 3, "David", "Bowie", "david@email.com", "3456789012");
-
-
-
-            // Read
-            List<Customer> customers = getAllCustomers(connection);
-            for (Customer customer : customers) {
-                System.out.println(customer.toString());
-            }
-
-            // Update
-            updateCustomer(connection, 1, "updated@email.com");
-
-            // Read again
-            customers = getALLCustomers(connection);
-            for (Customer customer : customers) {
-                System.out.println(customer.toString());
-            }
-
-            // Delete
-            deleteCustomer(connection, 3);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+    // Constructor opens the connection
+    public MySQLDatabase() throws SQLException {
+        this.connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
     }
 
-    private static List<Customer> getAllCustomers(Connection connection) {
-        return List.of();
-    };
-
-    public static void insertCustomer(Connection connection, int id, String firstName, String lastName, String email, String phone) throws SQLException {
-
+    public void insertCustomer(Customer customer) throws SQLException {
         String sql = "INSERT INTO Customer (customerId, firstName, lastName, email, phone) VALUES (?, ?, ?, ?, ?)";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.setString(2, firstName);
-            preparedStatement.setString(3, lastName);
-            preparedStatement.setString(4, email);
-            preparedStatement.setString(5, phone);
-            preparedStatement.executeUpdate();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, customer.getCustomerId());
+            ps.setString(2, customer.getFirstName());
+            ps.setString(3, customer.getLastName());
+            ps.setString(4, customer.getEmail());
+            ps.setString(5, customer.getPhone());
+            ps.executeUpdate();
         }
     }
 
-    private static List<Customer> getALLCustomers(Connection connection) throws SQLException {
+    public void readCustomers() throws SQLException {
         List<Customer> customers = new ArrayList<>();
         String sql = "SELECT customerId, firstName, lastName, email, phone FROM Customer";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-            while (resultSet.next()) {
-                int id = resultSet.getInt("customerId");
-                String firstName = resultSet.getString("firstName");
-                String lastName = resultSet.getString("lastName");
-                String email = resultSet.getString("email");
-                String phone = resultSet.getString("phone");
-                customers.add(new Customer(id, firstName, lastName, email, phone));
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                customers.add(new Customer(
+                        rs.getInt("customerId"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phone")
+                ));
             }
         }
-        return customers;
+        for (Customer c : customers) {
+            System.out.println(c.toString());
+        }
     }
 
-    private static void updateCustomer(Connection connection, int id, String newEmail) throws SQLException {
+    public void updateCustomer(int id, String newEmail) throws SQLException {
         String sql = "UPDATE Customer SET email = ? WHERE customerId = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, newEmail);
-            preparedStatement.setInt(2, id);
-            preparedStatement.executeUpdate();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, newEmail);
+            ps.setInt(2, id);
+            ps.executeUpdate();
         }
     }
 
-    private static void deleteCustomer(Connection connection, int id) throws SQLException {
+    public void deleteCustomer(int id) throws SQLException {
         String sql = "DELETE FROM Customer WHERE customerId = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.executeUpdate();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
         }
+    }
+
+    public void close() throws SQLException {
+        if (connection != null) connection.close();
     }
 }
 
