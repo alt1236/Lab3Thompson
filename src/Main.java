@@ -20,21 +20,33 @@ public class Main {
         MySQLDatabase mysql = new MySQLDatabase();
         MongoCRUD mongo = new MongoCRUD();
 
-        // MySQL CRUD
+        // Insert
         mysql.insertCustomer(customer1);
         mysql.insertCustomer(customer2);
         mysql.insertCustomer(customer3);
+
+        //Read
         mysql.readCustomers();
+
+        //Update
         mysql.updateCustomer(1, "updated@email.com");
+
+        //Delete
         mysql.deleteCustomer(3);
         mysql.close();
 
-        // Mongo CRUD
+        // Insert
         mongo.insertCustomer(customer1);
         mongo.insertCustomer(customer2);
         mongo.insertCustomer(customer3);
+
+        //Read
         mongo.readCustomers();
+
+        //Update
         mongo.updateCustomer(1, "updated@email.com");
+
+        //Delete
         mongo.deleteCustomer(3);
         mongo.close();
     }

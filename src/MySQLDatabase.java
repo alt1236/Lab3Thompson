@@ -29,6 +29,9 @@ public class MySQLDatabase {
         this.connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
     }
 
+    /**
+     * Inserts a customer into MySQL database.
+     */
     public void insertCustomer(Customer customer) throws SQLException {
         String sql = "INSERT INTO Customer (customerId, firstName, lastName, email, phone) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -40,7 +43,9 @@ public class MySQLDatabase {
             ps.executeUpdate();
         }
     }
-
+    /**
+     * Reads all customers.
+     */
     public void readCustomers() throws SQLException {
         List<Customer> customers = new ArrayList<>();
         String sql = "SELECT customerId, firstName, lastName, email, phone FROM Customer";
@@ -60,7 +65,9 @@ public class MySQLDatabase {
             System.out.println(c.toString());
         }
     }
-
+    /**
+     * Updates customer email.
+     */
     public void updateCustomer(int id, String newEmail) throws SQLException {
         String sql = "UPDATE Customer SET email = ? WHERE customerId = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -69,7 +76,9 @@ public class MySQLDatabase {
             ps.executeUpdate();
         }
     }
-
+    /**
+     * Deletes a customer.
+     */
     public void deleteCustomer(int id) throws SQLException {
         String sql = "DELETE FROM Customer WHERE customerId = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -77,7 +86,9 @@ public class MySQLDatabase {
             ps.executeUpdate();
         }
     }
-
+    /**
+     * Closes the database connection.
+     */
     public void close() throws SQLException {
         if (connection != null) connection.close();
     }

@@ -25,7 +25,9 @@ public class MongoCRUD {
         MongoDatabase database = mongoClient.getDatabase("retaildb");
         this.collection = database.getCollection("customers");
     }
-
+    /**
+     * Inserts a new customer
+     */
     public void insertCustomer(Customer customer) {
         Document doc = new Document("customerId", customer.getCustomerId())
                 .append("firstName", customer.getFirstName())
@@ -35,6 +37,9 @@ public class MongoCRUD {
         collection.insertOne(doc);
     }
 
+    /**
+     * Reads all customers.
+     */
     public void readCustomers() {
         System.out.println("MongoDB Read:");
         FindIterable<Document> customers = collection.find();
@@ -43,16 +48,25 @@ public class MongoCRUD {
         }
     }
 
+    /**
+     * Updates customer email.
+     */
     public void updateCustomer(int id, String newEmail) {
         Document filter = new Document("customerId", id);
         Document update = new Document("$set", new Document("email", newEmail));
         collection.updateOne(filter, update);
     }
 
+    /**
+     * Deletes a customer.
+     */
     public void deleteCustomer(int id) {
         collection.deleteOne(new Document("customerId", id));
     }
 
+    /**
+     * Closes the database connection.
+     */
     public void close() {
         if (mongoClient != null) mongoClient.close();
     }
